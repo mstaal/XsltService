@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XsltService", "XsltService\XsltService.csproj", "{587777FD-D399-4098-8DA5-E8DBBE14F2C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XsltService", "XsltService\XsltService.csproj", "{587777FD-D399-4098-8DA5-E8DBBE14F2C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XsltFunctionsTest", "XsltFunctionsTest\XsltFunctionsTest.csproj", "{A0A12513-7517-4D85-A9BC-773ACED79A54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{587777FD-D399-4098-8DA5-E8DBBE14F2C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{587777FD-D399-4098-8DA5-E8DBBE14F2C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{587777FD-D399-4098-8DA5-E8DBBE14F2C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0A12513-7517-4D85-A9BC-773ACED79A54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0A12513-7517-4D85-A9BC-773ACED79A54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0A12513-7517-4D85-A9BC-773ACED79A54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0A12513-7517-4D85-A9BC-773ACED79A54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using NUnit.Framework;
+using XsltService;
 
-namespace XsltService.Test
+namespace XsltFunctionsTest
 {
    [TestFixture]
     public class XsltFunctionsTest
@@ -51,11 +52,11 @@ namespace XsltService.Test
       <kms:regionskode>1082</kms:regionskode>
       <kms:regionsnavn>Region Midtjylland</kms:regionsnavn>
       <kms:kommunekode>0751</kms:kommunekode>
-      <kms:kommunenavn>Århus Kommune</kms:kommunenavn>
+      <kms:kommunenavn>�rhus Kommune</kms:kommunenavn>
       <kms:sognekode>9088</kms:sognekode>
       <kms:sognenavn>Ellevang</kms:sognenavn>
       <kms:retskredskode>1165</kms:retskredskode>
-      <kms:retskredsnavn>Århus retskreds</kms:retskredsnavn>
+      <kms:retskredsnavn>�rhus retskreds</kms:retskredsnavn>
       <kms:geometri>
         <gml:Polygon srsName=""urn:ogc:def:crs:EPSG::25832"">
           <gml:exterior>
@@ -126,11 +127,11 @@ namespace XsltService.Test
       <kms:regionskode>1082</kms:regionskode>
       <kms:regionsnavn>Region Midtjylland</kms:regionsnavn>
       <kms:kommunekode>0751</kms:kommunekode>
-      <kms:kommunenavn>Århus Kommune</kms:kommunenavn>
+      <kms:kommunenavn>�rhus Kommune</kms:kommunenavn>
       <kms:sognekode>9088</kms:sognekode>
       <kms:sognenavn>Ellevang</kms:sognenavn>
       <kms:retskredskode>1165</kms:retskredskode>
-      <kms:retskredsnavn>Århus retskreds</kms:retskredsnavn>
+      <kms:retskredsnavn>�rhus retskreds</kms:retskredsnavn>
       <kms:geometri>
         <gml:Polygon srsName=""urn:ogc:def:crs:EPSG::25832"">
           <gml:exterior>
@@ -200,7 +201,7 @@ namespace XsltService.Test
               <Lot>
                 <CadastralDistrictCode>960453</CadastralDistrictCode>
                 <LandParcelIdentifier>5e</LandParcelIdentifier>
-                <CadastralDistrictName>Fejrup By, Helgenæs</CadastralDistrictName>
+                <CadastralDistrictName>Fejrup By, Helgen�s</CadastralDistrictName>
                 <LandParcelRegistrationAreaMeasure>40938</LandParcelRegistrationAreaMeasure>
                 <AccessAddresses>
                   <AccessAddress>
@@ -258,7 +259,7 @@ namespace XsltService.Test
           <dmp:OBJEKTKODE>8230</dmp:OBJEKTKODE>
           <dmp:OBJEKTTKST>Naturperler</dmp:OBJEKTTKST>
           <dmp:SIGNATUR>0</dmp:SIGNATUR>
-          <dmp:STATUS>Gældende</dmp:STATUS>
+          <dmp:STATUS>G�ldende</dmp:STATUS>
           <dmp:STATUSKODE>1</dmp:STATUSKODE>
           <dmp:OFFENTLIG>1</dmp:OFFENTLIG>
           <dmp:BEMERKNING/>
@@ -434,13 +435,13 @@ namespace XsltService.Test
         [SetCulture("da-DK")]
         public void FormatDateTimeTest(string input, string expected1, string expected2, string expected3)
         {
-            var result = XsltFunctions.FormatDateTime(input, "dd-mm-åååå");
+            var result = XsltFunctions.FormatDateTime(input, "dd-mm-����");
             Assert.That(result, Is.EqualTo(expected1));
 
-            result = XsltFunctions.FormatDateTime(input, "d. mmmm åååå");
+            result = XsltFunctions.FormatDateTime(input, "d. mmmm ����");
             Assert.That(result, Is.EqualTo(expected2));
 
-            result = XsltFunctions.FormatDateTime(input, "d/m åååå");
+            result = XsltFunctions.FormatDateTime(input, "d/m ����");
             Assert.That(result, Is.EqualTo(expected3));
         }
 
@@ -486,7 +487,7 @@ namespace XsltService.Test
         {
             RunDoesNodesContainSameValue(new[] { 1 }, true);
         }
-        
+
         [Test]
         public void DoesNodesContainSameValueZeroNodeTest()
         {
@@ -533,7 +534,7 @@ namespace XsltService.Test
         {
             using (var stream = new StringReader(xmlString))
             {
-               return new XPathDocument(stream);
+                return new XPathDocument(stream);
             }
         }
 
@@ -543,9 +544,9 @@ namespace XsltService.Test
 
             foreach (var value in values)
             {
-               xml.Add(new XElement("Node", value));
+                xml.Add(new XElement("Node", value));
             }
-                
+
             return xml.ToString();
         }
     }

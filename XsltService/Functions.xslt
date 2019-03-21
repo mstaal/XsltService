@@ -7,8 +7,8 @@
                 exclude-result-prefixes="msxsl xsl func">
 
   <msxsl:script language="C#" implements-prefix="func">
-    <msxsl:assembly name="Xslt" />
-    <msxsl:using namespace="Xslt" />
+    <msxsl:assembly name="XsltService" />
+    <msxsl:using namespace="XsltService" />
     public bool IsDateTime(XPathNodeIterator iterator)
     {
     return XsltFunctions.IsDateTime(iterator);

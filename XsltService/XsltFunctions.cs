@@ -120,7 +120,7 @@ namespace XsltService
             return GeometryHelper.GetBoundingBoxFromGeometry(geometry);
         }
 
-        static String PaddedBoundingBoxFromGml(XPathNodeIterator iterator, String padding, String minSize)
+        public static String PaddedBoundingBoxFromGml(XPathNodeIterator iterator, String padding, String minSize)
         {
             XElement xml = XPathToElement(iterator);
             IGeometry geometry = GeometryHelper.GetGeometryFromGml(ToSimpleGml3(xml));
@@ -705,9 +705,7 @@ namespace XsltService
 
             /* 2. Add gml namespace and prefixes */
             XNamespace gml = "http://www.opengis.net/gml";
-            xmlElement.SetAttributeValue("xmlns:gml", "http://www.opengis.net/gml");
-            xmlElement.DescendantsAndSelf().ToList().ForEach(it => it.Attribute("xmlns")?.Remove());
-            xmlElement.DescendantsAndSelf().ToList().ForEach(it => it.Add(new XAttribute(XNamespace.Xmlns + "gml", gml)));
+            xmlElement.SetAttributeValue(XNamespace.Xmlns + "gml", "http://www.opengis.net/gml");
 
             return xmlElement.ToString();
         }
