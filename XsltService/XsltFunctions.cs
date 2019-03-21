@@ -106,8 +106,7 @@ namespace XsltService
         public static string BoundingBox(XPathNodeIterator iterator, string maxBufferWidth)
         {
 
-            double tryParse;
-            if (maxBufferWidth == null || !double.TryParse(maxBufferWidth, out tryParse))
+            if (maxBufferWidth == null || !double.TryParse(maxBufferWidth, out var tryParse))
             {
                 throw new ArgumentException("maximumbufferWidth is null or not a double." + maxBufferWidth);
             }
