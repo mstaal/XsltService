@@ -48,10 +48,7 @@ namespace XsltService
         {
             var xmlStrings = iterator.OfType<XPathNavigator>().Select(n => n.OuterXml).ToList();
             var xmlElements = new List<XElement>();
-            foreach (var element in xmlStrings)
-            {
-                xmlElements.Add(XElement.Parse(element));
-            }
+            xmlStrings.ForEach(el => xmlElements.Add(XElement.Parse(el)));
 
             return xmlElements;
         }
