@@ -14,11 +14,11 @@ namespace XsltService.Controllers
     {
         // POST: api/Api
         [HttpPost("{id}", Name = "post")]
-        public IActionResult Post([FromBody] string value)
+        public IActionResult Post([FromBody] IEnumerable<string> value)
         {
             return new ContentResult
             {
-                Content = XsltTransformation.Transform(new XDocument(value), "XslFo.xslt").ToString(),
+                Content = XsltTransformation.Transform(XDocument.Parse(value.ElementAt(0)), value.ElementAt(1)).ToString(),
                 ContentType = "text/xml",
                 StatusCode = 200
             };
