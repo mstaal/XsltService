@@ -31,9 +31,9 @@ namespace XsltService
 
         private static Dictionary<string, Value> cache = new Dictionary<string, Value>();
 
-        public static XDocument Transform(XNode document, string xsltFile)
+        public static XDocument Transform(XNode document, XElement xsltDocument)
         {
-            return Transform(document, new XsltArgumentList(), xsltFile);
+            return Transform(document, new XsltArgumentList(), xsltDocument);
         }
 
         /// <summary>
@@ -41,65 +41,47 @@ namespace XsltService
         /// </summary>
         /// <param name="document"> Xml document to be transformed. </param>
         /// <param name="xsltArgumentList"> Arguments for the tarnsformation. </param>
-        /// <param name="xsltFile"> Xslt transformation schema file info. </param>
+        /// <param name="xsltDocument"> Xslt transformation schema file info. </param>
         /// <returns> Transformed xml document from given xml document using xslt schema. </returns>
-        public static XDocument Transform(XNode document, XsltArgumentList xsltArgumentList, string xsltFile)
+        public static XDocument Transform(XNode document, XsltArgumentList xsltArgumentList, XElement xsltDocument)
         {
             if (document == null)
             {
                 throw new ArgumentNullException("document");
             }
 
-            if (xsltFile == null)
+            if (xsltDocument == null)
             {
-                throw new ArgumentNullException("xsltFile");
+                throw new ArgumentNullException("xsltDocument");
             }
+            
+            var importElements = xsltDocument.XPathSelectElements(
+                "//xslt:import", CreateXsltNamespaceManager(new XDocument(xsltDocument)));
 
-            var xsltFilePath = Path.Combine(PathResolver.ExecutablePath, xsltFile);
+            var query = from importElement in importElements
+                        let hrefAttribute = importElement.Attribute("href")
+                        where hrefAttribute != null
+                        select hrefAttribute;
 
-            lock (cache)
+            foreach (var hrefAttribute in query)
             {
-                if (!cache.ContainsKey(xsltFilePath)
-                    || cache[xsltFilePath].LastWriteTime < new FileInfo(xsltFilePath).LastWriteTimeUtc)
+                if (File.Exists(hrefAttribute.Value))
                 {
-                    var xsltDocument = XDocument.Load(xsltFilePath);
+                    continue;
+                }
 
-                    var importElements = xsltDocument.XPathSelectElements(
-                        "//xslt:import", CreateXsltNamespaceManager(xsltDocument));
-
-                    var query = from importElement in importElements
-                                let hrefAttribute = importElement.Attribute("href")
-                                where hrefAttribute != null
-                                select hrefAttribute;
-
-                    foreach (var hrefAttribute in query)
-                    {
-                        if (File.Exists(hrefAttribute.Value))
-                        {
-                            continue;
-                        }
-
-                        var newLocation = Path.Combine(PathResolver.ExecutablePath, hrefAttribute.Value);
-                        if (File.Exists(newLocation))
-                        {
-                            hrefAttribute.Value = newLocation;
-                        }
-                    }
-
-                    var xsltTransformForCache = new XslCompiledTransform(false); // <- Will cause memory leak if debug = true, or at least it will create tons of .dlls
-                    xsltTransformForCache.Load(
-                        xsltDocument.CreateReader(), new XsltSettings(false, true), new XmlUrlResolver());
-                    cache[xsltFilePath] =
-                        new Value
-                        {
-                            LastWriteTime = new FileInfo(xsltFilePath).LastWriteTimeUtc,
-                            TransFormation = xsltTransformForCache
-                        };
+                var newLocation = Path.Combine(PathResolver.ExecutablePath, hrefAttribute.Value);
+                if (File.Exists(newLocation))
+                {
+                    hrefAttribute.Value = newLocation;
                 }
             }
 
-            XslCompiledTransform xsltTransformation = cache[xsltFilePath].TransFormation;
-
+            var xsltTransformation = new XslCompiledTransform(false); // <- Will cause memory leak if debug = true, or at least it will create tons of .dlls
+            xsltTransformation.Load(
+                xsltDocument.CreateReader(), new XsltSettings(false, true), new XmlUrlResolver()
+                );
+                
             var reader = document.CreateReader();
             var transformedDocument = new XDocument();
             using (var xmlWriter = transformedDocument.CreateWriter())
