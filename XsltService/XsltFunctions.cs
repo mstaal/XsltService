@@ -326,8 +326,7 @@ namespace XsltService
         public static string ConvertUtcDate(XPathNodeIterator iterator)
         {
             var value = GetTrimmed(iterator);
-            DateTime dateTime;
-            var parseOperation = DateTime.TryParse(value, out dateTime);
+            var parseOperation = DateTime.TryParse(value, out var dateTime);
 
             if (parseOperation)
             {
@@ -722,8 +721,7 @@ namespace XsltService
 
         public static string ConvertUtcToLocalTime(string utcTime)
         {
-            DateTime dateTime;
-            var parseOperation = DateTime.TryParse(utcTime, out dateTime);
+            var parseOperation = DateTime.TryParse(utcTime, out var dateTime);
             if (parseOperation)
             {
                 return dateTime.ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture);
