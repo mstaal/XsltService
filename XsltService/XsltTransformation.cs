@@ -35,7 +35,9 @@ namespace XsltService
 
         public static XDocument Transform(XNode document, XElement xsltDocument)
         {
-            return Transform(document, new XsltArgumentList(), xsltDocument);
+            var args = new XsltArgumentList();
+            args.AddExtensionObject("ext:xslt", ExtensionFunctions);
+            return Transform(document, args, xsltDocument);
         }
 
         /// <summary>
@@ -88,7 +90,6 @@ namespace XsltService
             var transformedDocument = new XDocument();
             using (var xmlWriter = transformedDocument.CreateWriter())
             {
-                xsltArgumentList.AddExtensionObject("ext:xslt", ExtensionFunctions);
                 xsltTransformation.Transform(reader, xsltArgumentList, xmlWriter);
                 return transformedDocument;
             }
