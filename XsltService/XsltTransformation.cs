@@ -1,14 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright company="Netcompany" file="XsltTransformation.cs">
-//  DIADAM 
-// </copyright>
-// <summary>
-//   Interface for the XsltTransformation class
-// </summary>
-// 
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

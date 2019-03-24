@@ -594,10 +594,8 @@ namespace XsltService
             }
 
             var xpathExpressions = XPathToStrings(iterator);
-
-            var value = xpathExpressions.FirstOrDefault()?.Trim();
-
-            return value ?? string.Empty;
+            
+            return xpathExpressions.FirstOrDefault()?.Trim() ?? string.Empty;
         }
 
         private static double? SafeParseDouble(string val)
