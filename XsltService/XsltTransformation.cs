@@ -31,6 +31,8 @@ namespace XsltService
 
         private static Dictionary<string, Value> cache = new Dictionary<string, Value>();
 
+        private static XsltFunctions ExtensionFunctions = new XsltFunctions();
+
         public static XDocument Transform(XNode document, XElement xsltDocument)
         {
             return Transform(document, new XsltArgumentList(), xsltDocument);
@@ -40,7 +42,7 @@ namespace XsltService
         /// Transforms given xml document using xslt schema to other xml document.
         /// </summary>
         /// <param name="document"> Xml document to be transformed. </param>
-        /// <param name="xsltArgumentList"> Arguments for the tarnsformation. </param>
+        /// <param name="xsltArgumentList"> Arguments for the transformation. </param>
         /// <param name="xsltDocument"> Xslt transformation schema file info. </param>
         /// <returns> Transformed xml document from given xml document using xslt schema. </returns>
         public static XDocument Transform(XNode document, XsltArgumentList xsltArgumentList, XElement xsltDocument)
@@ -86,6 +88,7 @@ namespace XsltService
             var transformedDocument = new XDocument();
             using (var xmlWriter = transformedDocument.CreateWriter())
             {
+                xsltArgumentList.AddExtensionObject("ext:xslt", ExtensionFunctions);
                 xsltTransformation.Transform(reader, xsltArgumentList, xmlWriter);
                 return transformedDocument;
             }

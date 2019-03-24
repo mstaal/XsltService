@@ -20,7 +20,7 @@ namespace XsltService
     /// <summary>
     /// C# containing methods visible in Functions.xslt for use in transformations.
     /// </summary>
-    public static class XsltFunctions
+    public class XsltFunctions
     {
         private const string YearPattern = "yyyy";
 

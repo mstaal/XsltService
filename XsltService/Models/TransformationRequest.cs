@@ -11,10 +11,10 @@ namespace XsltService.Models
         {
         }
 
-        [DataMember]
+        [DataMember(IsRequired = true)]
         public XElement XmlDocument { get; set; }
 
-        [DataMember]
-        public XElement XsltTransformation { get; set; }
+        [DataMember(IsRequired = true)]
+        public XElement XslTransformation { get; set; }
     }
 }
