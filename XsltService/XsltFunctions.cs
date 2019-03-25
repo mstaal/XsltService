@@ -636,8 +636,7 @@ namespace XsltService
 
         public static string ConvertUtcToLocalTime(string utcTime)
         {
-            var parseOperation = DateTime.TryParse(utcTime, out var dateTime);
-            if (parseOperation)
+            if (DateTime.TryParse(utcTime, out var dateTime))
             {
                 return dateTime.ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture);
             }
