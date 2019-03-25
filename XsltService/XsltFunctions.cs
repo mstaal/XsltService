@@ -124,7 +124,7 @@ namespace XsltService
             return GeometryHelper.GetBoundingBoxFromGeometry(geometry);
         }
 
-        public static string PaddedBoundingBoxFromGml(XPathNodeIterator iterator, String padding, String minSize)
+        public static string PaddedBoundingBoxFromGml(XPathNodeIterator iterator, string padding, string minSize)
         {
             XElement xml = XPathToElement(iterator);
             IGeometry geometry = GeometryHelper.GetGeometryFromGml(ToSimpleGml3(xml));
