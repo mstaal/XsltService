@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using GeoAPI.Geometries;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.GML2;
@@ -56,7 +57,7 @@ namespace XsltService
 
         public static IGeometry GetGeometryFromGml(string gml)
         {
-            //gml = replaceObsoleteGmlTag(gml)
+            gml = ReplaceObsoleteGmlTag(gml);
 
             try
             {
@@ -67,6 +68,37 @@ namespace XsltService
             {
                 throw new ArgumentException("Input not instance of geometry", ex);
             }
+        }
+
+        private static string ReplaceObsoleteGmlTag(string gml)
+        {
+            if (!gml.Contains("coordinates"))
+            {
+                return gml;
+            }
+            XElement gmlElement = XElement.Parse(gml);
+            List<XElement> coordinatesList = gmlElement.Descendants().ToList().FindAll(it => it.Name == "coordinates");
+            if (coordinatesList.Count > 0)
+            {
+                XElement coordinates = coordinatesList[0];
+                if (IsMoreThanOnePoint(coordinates.Value))
+                {
+                    coordinates.Name = "posList";
+                }
+                else
+                {
+                    coordinates.Name = "pos";
+                }
+            }
+
+            return gmlElement.ToString().Trim().Replace(",", " ");
+        }
+
+        private static bool IsMoreThanOnePoint(string coordinates)
+        {
+            List<string> spaceList = coordinates.Split("\\s+").ToList();
+            List<string> commaList = coordinates.Split(",").ToList();
+            return spaceList.Count > 1 && (commaList.Count - 1 == spaceList.Count);
         }
 
     }
