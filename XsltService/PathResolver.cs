@@ -1,14 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright company="Netcompany" file="PathResolver.cs">
-//  DIADAM 
-// </copyright>
-// <summary>
-//   PathResolver class
-// </summary>
-// 
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
 
