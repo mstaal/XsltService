@@ -141,7 +141,7 @@ namespace XsltService
 
         private static IGeometry ElementToGeometry(XElement element)
         {
-            String simpleGml = ToSimpleGml3(element);
+            string simpleGml = ToSimpleGml3(element);
             return GeometryHelper.GetGeometryFromGml(simpleGml);
         }
 
@@ -621,43 +621,6 @@ namespace XsltService
         /// </summary>
         /// <param name="gml">The GML which needs to have attributes removed.</param>
         /// <returns></returns>
-        private static string ToSimpleGml3(string gml)
-        {
-            /* 1. Remove attributes */
-            var result = new StringBuilder();
-            var currentInputPosition = 0;
-            var startOfAttributes = StartOfAttributes(gml, 0);
-            var endOfAttributes = gml.IndexOf('>', startOfAttributes);
-
-            while (startOfAttributes != -1)
-            {
-                result.Append(gml, currentInputPosition, startOfAttributes - currentInputPosition);
-                currentInputPosition = endOfAttributes;
-                startOfAttributes = StartOfAttributes(gml, endOfAttributes);
-                if (startOfAttributes == -1)
-                {
-                    break;
-                }
-
-                endOfAttributes = gml.IndexOf('>', startOfAttributes);
-            }
-
-            result.Append(gml, currentInputPosition, gml.Length - currentInputPosition);
-
-            /* 2. Add gml namespace and prefixes */
-            var right = result.ToString().IndexOf('>');
-
-            result.Insert(right, @" xmlns:gml=""http://www.opengis.net/gml""");
-
-            EnsureGmlPrefix(result, "Polygon");
-            EnsureGmlPrefix(result, "posList");
-            EnsureGmlPrefix(result, "exterior");
-            EnsureGmlPrefix(result, "interior");
-            EnsureGmlPrefix(result, "LinearRing");
-
-            return result.ToString();
-        }
-
         private static string ToSimpleGml3(XElement xml)
         {
             /* 1. Remove attributes */
@@ -671,35 +634,6 @@ namespace XsltService
             return xmlElement.ToString();
         }
 
-        private static int StartOfAttributes(string s, int left)
-        {
-            while (true)
-            {
-                left = s.IndexOf('<', left);
-                if (left == -1)
-                {
-                    return -1;
-                }
-
-                var right = s.IndexOf('>', left);
-                if (right == -1)
-                {
-                    // No more elements in XML
-                    return -1;
-                }
-
-                var space = s.IndexOfAny(new[] { ' ', '\t' }, left, right - left);
-                /*Math.Min(gml.IndexOf(' ', left), gml.IndexOf('\t', left));*/
-                if (space != -1)
-                {
-                    // Found left of attributes
-                    return space;
-                }
-
-                left = right;
-            }
-        }
-
         public static string ConvertUtcToLocalTime(string utcTime)
         {
             var parseOperation = DateTime.TryParse(utcTime, out var dateTime);
@@ -710,17 +644,11 @@ namespace XsltService
             throw new ArgumentException(string.Format("Following utcTime is not a valid value: {0}", utcTime));
         }
 
-        private static void EnsureGmlPrefix(StringBuilder result, string s)
-        {
-            result.Replace("<" + s, @"<gml:" + s);
-            result.Replace("</" + s, @"</gml:" + s);
-        }
-
         /// <summary>
         /// Function to 'debug' xslt. Call this function with a node-set, and see what the nodes in the set contains 
         /// </summary>
         /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <returns>the node-set itself</returns>
         public static object DebugIt(object obj)
         {
             if (obj is string s)
