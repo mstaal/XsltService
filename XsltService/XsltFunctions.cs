@@ -20,7 +20,7 @@ namespace XsltService
     /// <summary>
     /// C# containing methods visible in Functions.xslt for use in transformations.
     /// </summary>
-    public static class XsltFunctions
+    public class XsltFunctions
     {
         private const string YearPattern = "yyyy";
 
@@ -44,9 +44,14 @@ namespace XsltService
                 "dd.MM.yyyy"
             };
 
-        public static List<XElement> XPathToElements(XPathNodeIterator iterator)
+        private static List<string> XPathToStrings(XPathNodeIterator iterator)
         {
-            var xmlStrings = iterator.OfType<XPathNavigator>().Select(n => n.OuterXml).ToList();
+            return iterator.OfType<XPathNavigator>().Select(n => n.OuterXml).ToList();
+        }
+
+        private static List<XElement> XPathToElements(XPathNodeIterator iterator)
+        {
+            var xmlStrings = XPathToStrings(iterator);
             var xmlElements = new List<XElement>();
             xmlStrings.ForEach(el => xmlElements.Add(XElement.Parse(el)));
 
@@ -321,8 +326,7 @@ namespace XsltService
         public static string ConvertUtcDate(XPathNodeIterator iterator)
         {
             var value = GetTrimmed(iterator);
-            DateTime dateTime;
-            var parseOperation = DateTime.TryParse(value, out dateTime);
+            var parseOperation = DateTime.TryParse(value, out var dateTime);
 
             if (parseOperation)
             {
@@ -496,7 +500,7 @@ namespace XsltService
         /// </summary>
         /// <param name="value">The url to convert.</param>
         /// <returns>The encoded url.</returns>
-        public static string EncodeUrl(string value)
+        private static string EncodeUrl(string value)
         {
             return HttpUtility.UrlEncode(value);
         }
@@ -572,58 +576,33 @@ namespace XsltService
 
         private static bool CanParseUsingDefault(string value)
         {
-            DateTime notUsed;
-            return DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out notUsed);
+            return DateTime.TryParse(value, CultureInfo.InvariantCulture, 
+                                     DateTimeStyles.AssumeLocal, out var notUsed);
         }
 
         private static bool CanParseCustom(string value)
         {
-            DateTime notUsed;
             return DateTime.TryParseExact(value, CustomFormats.ToArray(), CultureInfo.InvariantCulture,
-                                          DateTimeStyles.AssumeLocal, out notUsed);
+                                          DateTimeStyles.AssumeLocal, out var notUsed);
         }
 
         private static string GetTrimmed(XPathNodeIterator iterator)
         {
-            if (iterator == null)
-            {
-                throw new ArgumentNullException("iterator");
-            }
-
             if (iterator.Count > 1)
             {
                 throw new XsltException("Cannot convert a node-set which contains more than one node");
             }
 
-            if (!iterator.MoveNext())
-            {
-                return string.Empty;
-            }
-
-            var node = iterator.Current;
-            if (node == null)
-            {
-                return string.Empty;
-            }
-
-            var isNilAttribute = node.GetAttribute("nil", "http://www.w3.org/2001/XMLSchema-instance");
-
-            bool isNil;
-            if (!string.IsNullOrEmpty(isNilAttribute) && bool.TryParse(isNilAttribute, out isNil) && isNil)
-            {
-                return string.Empty;
-            }
-
-            var value = node.Value;
-            return value != null ? value.Trim() : null;
+            var xpathExpressions = XPathToStrings(iterator);
+            
+            return xpathExpressions.FirstOrDefault()?.Trim() ?? string.Empty;
         }
 
         private static double? SafeParseDouble(string val)
         {
-            double result;
-            return double.TryParse(val, NumberStyles.Any, CultureInfo.InvariantCulture, out result)
+            return double.TryParse(val, NumberStyles.Any, CultureInfo.InvariantCulture, out var result)
                        ? result
-                       : (double?)null;
+                       : (double?) null;
         }
 
         private static string DoubleToString(double v, string format)
@@ -643,8 +622,8 @@ namespace XsltService
 
         private static DateTime? SafeParseDateTime(string val)
         {
-            DateTime result;
-            return DateTime.TryParse(val, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result)
+            return DateTime.TryParse(val, CultureInfo.InvariantCulture,
+                                     DateTimeStyles.AssumeLocal, out var result)
                        ? result
                        : (DateTime?)null;
         }
@@ -709,7 +688,7 @@ namespace XsltService
             return xmlElement.ToString();
         }
 
-    private static int StartOfAttributes(string s, int left)
+        private static int StartOfAttributes(string s, int left)
         {
             while (true)
             {
@@ -740,8 +719,7 @@ namespace XsltService
 
         public static string ConvertUtcToLocalTime(string utcTime)
         {
-            DateTime dateTime;
-            var parseOperation = DateTime.TryParse(utcTime, out dateTime);
+            var parseOperation = DateTime.TryParse(utcTime, out var dateTime);
             if (parseOperation)
             {
                 return dateTime.ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture);
@@ -770,20 +748,18 @@ namespace XsltService
 
             if (obj == null)
             {
-                return false;
+                return obj;
             }
 
             /*XPathNodeIterator iterator*/
-            var node = obj as XPathNodeIterator;
-            var copy = node?.Clone();
-            var enumerator = node?.GetEnumerator();
-            var text = enumerator?.Current as string;
+            var nodes = obj as XPathNodeIterator;
+            var copy = nodes?.Clone();
+            var texts = XPathToStrings(nodes);
 
             Console.WriteLine("Responses are: \n");
-            Console.WriteLine(text);
-            while (enumerator != null && enumerator.MoveNext())
+            foreach(var entry in texts)
             {
-                Console.WriteLine(enumerator.Current as string);
+                Console.WriteLine(entry);
             }
             return copy;
         }

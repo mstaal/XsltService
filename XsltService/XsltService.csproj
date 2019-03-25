@@ -20,6 +20,7 @@
     <PackageReference Include="NUnit.Extension.NUnitV2Driver" Version="3.7.0" />
     <PackageReference Include="NUnit.Runners" Version="3.9.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+    <PackageReference Include="System.Xml.ReaderWriter" Version="4.3.1" />
   </ItemGroup>
 
 </Project>
