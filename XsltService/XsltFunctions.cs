@@ -435,24 +435,7 @@ namespace XsltService
                 return false;
             }
 
-            string initialValue;
-
-            if (iterator.MoveNext())
-            {
-                initialValue = iterator.Current.Value;
-            }
-            else
-            {
-                return true;
-            }
-
-            var result = true;
-            while (iterator.MoveNext() && result)
-            {
-                result &= iterator.Current.Value == initialValue;
-            }
-
-            return result;
+            return XPathToElements(iterator).Select(it => it.Value).Distinct().Count() <= 1;
         }
 
         /// <summary>
