@@ -162,8 +162,7 @@ namespace XsltService
                     throw new ArgumentException("Geometry is not valid");
                 }
 
-                IGeometry intersection = geometry.Intersects(feature) ? feature : null;
-                if (intersection != null)
+                if (geometry.Intersects(feature))
                 {
                     return feature;
                 }
