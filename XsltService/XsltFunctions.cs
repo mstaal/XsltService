@@ -111,7 +111,7 @@ namespace XsltService
         public static string BoundingBox(XPathNodeIterator iterator, string maxBufferWidth)
         {
 
-            if (maxBufferWidth == null || !double.TryParse(maxBufferWidth, out var tryParse))
+            if (maxBufferWidth == null || !double.TryParse(maxBufferWidth, out var parsedMaxBufferWidth))
             {
                 throw new ArgumentException("maximumbufferWidth is null or not a double." + maxBufferWidth);
             }
@@ -120,7 +120,7 @@ namespace XsltService
             string stringGeometry = ToSimpleGml3(element);
 
             // Get Polygon geometry and return the matching boundingBox
-            IGeometry geometry = GeometryHelper.GetGeometryFromGml(stringGeometry);
+            IGeometry geometry = GeometryHelper.GetGeometryFromGml(stringGeometry).Buffer(parsedMaxBufferWidth);
             return GeometryHelper.GetBoundingBoxFromGeometry(geometry);
         }
 
