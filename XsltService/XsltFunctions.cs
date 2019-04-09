@@ -44,6 +44,8 @@ namespace XsltService
                 "dd.MM.yyyy"
             };
 
+        public StringBuilder DebugMessage { get; set; } = new StringBuilder("Responses are: \n");
+
         private static List<string> XPathToStrings(XPathNodeIterator iterator)
         {
             return iterator.OfType<XPathNavigator>().Select(n => n.OuterXml).ToList();
@@ -647,16 +649,11 @@ namespace XsltService
         /// </summary>
         /// <param name="obj"></param>
         /// <returns>the node-set itself</returns>
-        public static object DebugIt(object obj)
+        public object DebugIt(object obj)
         {
-            if (obj is string s)
+            if (obj is string || obj is bool || obj is double)
             {
-                Console.Write(s);
-                return s;
-            }
-
-            if (obj == null)
-            {
+                Console.Write(obj);
                 return obj;
             }
 
@@ -668,8 +665,10 @@ namespace XsltService
             Console.WriteLine("Responses are: \n");
             foreach(var entry in texts)
             {
+                DebugMessage.AppendLine(entry);
                 Console.WriteLine(entry);
             }
+
             return copy;
         }
     }
