@@ -23,11 +23,21 @@ namespace XsltService.Controllers
         public IActionResult Post([FromBody] TransformationRequest request)
         {
             var document = request.XmlDocument;
-            var transformation = request.XslTransformation;
+            var transformationSpec = request.XslTransformation;
+            var xsltFile = transformationSpec.Name == "File" ? transformationSpec.Value : null;
+            var content = "";
+            if (!string.IsNullOrEmpty(xsltFile))
+            {
+                content = new XDocument(XsltTransformation.Transform(document, xsltFile)).ToString();
+            }
+            else
+            {
+                content = new XDocument(XsltTransformation.Transform(document, transformationSpec)).ToString();
+            }
 
             return new ContentResult
             {
-                Content = new XDocument(XsltTransformation.Transform(document, transformation)).ToString(),
+                Content = content,
                 ContentType = "text/xml",
                 StatusCode = 200
             };

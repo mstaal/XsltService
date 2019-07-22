@@ -325,7 +325,7 @@ namespace XsltFunctionsTest
         [TestCase("09/20/2012 13:21:51", "2012-09-20")]
         public void ConvertDateTest(string input, string expected)
         {
-            var actual = XsltFunctions.ConvertDate(input);
+            var actual = XsltFunctions.ConvertDateString(input);
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -334,15 +334,15 @@ namespace XsltFunctionsTest
         {
             const string input = "01/25/41 1-1-2011";
 
-            Assert.That(XsltFunctions.IsDateTime(input), Is.False);
+            Assert.That(XsltFunctions.IsDateTimeString(input), Is.False);
 
-            var actual = XsltFunctions.ConvertDate(input);
+            var actual = XsltFunctions.ConvertDateString(input);
             Assert.That(actual, Is.EqualTo(input));
 
-            actual = XsltFunctions.ConvertDateTime(input);
+            actual = XsltFunctions.ConvertDateTimeString(input);
             Assert.That(actual, Is.EqualTo(input));
 
-            actual = XsltFunctions.ConvertYear(input);
+            actual = XsltFunctions.ConvertYearString(input);
             Assert.That(actual, Is.EqualTo(input));
         }
 
@@ -365,7 +365,7 @@ namespace XsltFunctionsTest
         [TestCase("09/20/2012 13:21:51", "2012-09-20T13:21:51")]
         public void ConvertDateTimeTest(string input, string expected)
         {
-            var actual = XsltFunctions.ConvertDateTime(input);
+            var actual = XsltFunctions.ConvertDateTimeString(input);
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -388,7 +388,7 @@ namespace XsltFunctionsTest
         [TestCase("09/20/2012 00:00:00", "2012")]
         public void ConvertYearTest(string input, string expected)
         {
-            var actual = XsltFunctions.ConvertYear(input);
+            var actual = XsltFunctions.ConvertYearString(input);
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -411,7 +411,7 @@ namespace XsltFunctionsTest
         [TestCase("09/20/2012 00:00:00")]
         public void IsDateTimeTest(string input)
         {
-            var result = XsltFunctions.IsDateTime(input);
+            var result = XsltFunctions.IsDateTimeString(input);
             Assert.That(result, Is.True, input + " was not a date time.");
         }
 
@@ -435,13 +435,13 @@ namespace XsltFunctionsTest
         [SetCulture("da-DK")]
         public void FormatDateTimeTest(string input, string expected1, string expected2, string expected3)
         {
-            var result = XsltFunctions.FormatDateTime(input, "dd-mm-ееее");
+            var result = XsltFunctions.FormatDateTimeString(input, "dd-mm-ееее");
             Assert.That(result, Is.EqualTo(expected1));
 
-            result = XsltFunctions.FormatDateTime(input, "d. mmmm ееее");
+            result = XsltFunctions.FormatDateTimeString(input, "d. mmmm ееее");
             Assert.That(result, Is.EqualTo(expected2));
 
-            result = XsltFunctions.FormatDateTime(input, "d/m ееее");
+            result = XsltFunctions.FormatDateTimeString(input, "d/m ееее");
             Assert.That(result, Is.EqualTo(expected3));
         }
 
@@ -454,23 +454,23 @@ namespace XsltFunctionsTest
         [TestCase("123456789.1", "123.456.789", "123.456.789,1", "123456789,1", "123.456.789,10")]
         public void FormatDoubleTest(string input, string expected1, string expected2, string expected3, string expected4)
         {
-            var actual = XsltFunctions.FormatDouble(input, "###.###");
+            var actual = XsltFunctions.FormatDoubleString(input, "###.###");
             Assert.That(actual, Is.EqualTo(expected1));
 
-            actual = XsltFunctions.FormatDouble(input, "###.###,##");
+            actual = XsltFunctions.FormatDoubleString(input, "###.###,##");
             Assert.That(actual, Is.EqualTo(expected2));
 
-            actual = XsltFunctions.FormatDouble(input, "###,##");
+            actual = XsltFunctions.FormatDoubleString(input, "###,##");
             Assert.That(actual, Is.EqualTo(expected3));
 
-            actual = XsltFunctions.FormatDouble(input, "###.###,00");
+            actual = XsltFunctions.FormatDoubleString(input, "###.###,00");
             Assert.That(actual, Is.EqualTo(expected4));
         }
 
         [Test]
         public void FormatDoubleNanTest()
         {
-            var actual = XsltFunctions.FormatDouble("NaN", "###.###,##");
+            var actual = XsltFunctions.FormatDoubleString("NaN", "###.###,##");
             Assert.That(actual, Is.EqualTo(string.Empty));
         }
 

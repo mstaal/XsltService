@@ -62,7 +62,7 @@ namespace XsltService
 
         public static XElement XPathToElement(XPathNodeIterator iterator)
         {
-            var xmlElements = XPathToElements(iterator);   
+            var xmlElements = XPathToElements(iterator);
 
             return xmlElements.FirstOrDefault();
         }
@@ -86,7 +86,7 @@ namespace XsltService
             IGeometry cadastralGeometryBuffered = (!cadastralGeometry.Buffer(bufferWidthParsed).IsEmpty ? cadastralGeometry.Buffer(bufferWidthParsed) : cadastralGeometry) as Geometry;
             //using original geometry if buffered is empty
             IGeometry intersection = GetIntersectingGeometry(cadastralGeometryBuffered, features);
-            return intersection.IsValid || !intersection.IsEmpty;
+            return intersection != null && !intersection.IsEmpty;
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace XsltService
         {
             if (!geometry.IsValid)
             {
-                throw new ArgumentException("Geometry is not valid");
+                geometry = geometry.Buffer(0);
             }
 
             List<XElement> featureList = XPathToElements(features).Select(it => it.Nodes().FirstOrDefault() as XElement).ToList();
@@ -161,7 +161,7 @@ namespace XsltService
                 IGeometry feature = ElementToGeometry(element);
                 if (!feature.IsValid)
                 {
-                    throw new ArgumentException("Geometry is not valid");
+                    feature = feature.Buffer(0);
                 }
 
                 if (geometry.Intersects(feature))
@@ -256,7 +256,7 @@ namespace XsltService
         public static bool IsDateTime(XPathNodeIterator iterator)
         {
             var value = GetTrimmed(iterator);
-            return IsDateTime(value);
+            return IsDateTimeString(value);
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace XsltService
         /// </summary>
         /// <param name="value">The value to inspect.</param>
         /// <returns>True if <paramref name="value"/> is a date time.</returns>
-        public static bool IsDateTime(string value)
+        public static bool IsDateTimeString(string value)
         {
             if (string.IsNullOrEmpty(value))
             {
@@ -283,7 +283,7 @@ namespace XsltService
         public static string ConvertYear(XPathNodeIterator iterator)
         {
             var value = GetTrimmed(iterator);
-            return ConvertYear(value);
+            return ConvertYearString(value);
         }
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace XsltService
         /// </summary>
         /// <param name="value">The date time to convert.</param>
         /// <returns>The normalzied date time.</returns>
-        public static string ConvertYear(string value)
+        public static string ConvertYearString(string value)
         {
             return Convert(value, YearPattern, YearPattern);
         }
@@ -305,7 +305,7 @@ namespace XsltService
         public static string ConvertDate(XPathNodeIterator iterator)
         {
             var value = GetTrimmed(iterator);
-            return ConvertDate(value);
+            return ConvertDateString(value);
         }
 
         /// <summary>
@@ -313,7 +313,7 @@ namespace XsltService
         /// </summary>
         /// <param name="value">The date time to convert.</param>
         /// <returns>The normalzied date time.</returns>
-        public static string ConvertDate(string value)
+        public static string ConvertDateString(string value)
         {
             return Convert(value, ShortDatePattern, ShortUtcDatePattern);
         }
@@ -347,7 +347,7 @@ namespace XsltService
         public static string ConvertDateTime(XPathNodeIterator iterator)
         {
             var value = GetTrimmed(iterator);
-            return ConvertDateTime(value);
+            return ConvertDateTimeString(value);
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace XsltService
         /// </summary>
         /// <param name="value">The date time to convert.</param>
         /// <returns>The normalzied date time.</returns>
-        public static string ConvertDateTime(string value)
+        public static string ConvertDateTimeString(string value)
         {
             return Convert(value, LongDatePattern, LongUtcDatePattern);
         }
@@ -372,7 +372,7 @@ namespace XsltService
         public static string FormatDateTime(XPathNodeIterator iterator, string format)
         {
             var value = GetTrimmed(iterator);
-            return FormatDateTime(value, format);
+            return FormatDateTimeString(value, format);
         }
 
         /// <summary>
@@ -382,11 +382,11 @@ namespace XsltService
         /// <param name="value">The value to format.</param>
         /// <param name="format">The format, can only contain the letters 'd', 'm', 'å', dot, whitespace and '-'.</param>
         /// <returns>The formated date time.</returns>
-        public static string FormatDateTime(string value, string format)
+        public static string FormatDateTimeString(string value, string format)
         {
             const string ValidFormatPattern = "[-/dmå. ]+";
 
-            return Format(value, format, ValidFormatPattern, ConvertDateTime, SafeParseDateTime, DateTimeToString);
+            return Format(value, format, ValidFormatPattern, ConvertDateTimeString, SafeParseDateTime, DateTimeToString);
         }
 
         /// <summary>
@@ -401,7 +401,7 @@ namespace XsltService
         public static string FormatDouble(XPathNodeIterator iterator, string format)
         {
             var value = GetTrimmed(iterator);
-            return FormatDouble(value, format);
+            return FormatDoubleString(value, format);
         }
 
         /// <summary>
@@ -411,7 +411,7 @@ namespace XsltService
         /// <param name="value">The value to format.</param>
         /// <param name="format">The format, can only contain the letters dot, comma and '#'.</param>
         /// <returns>The formated double.</returns>
-        public static string FormatDouble(string value, string format)
+        public static string FormatDoubleString(string value, string format)
         {
             const string ValidFormatPattern = "[#.,0]+";
 
@@ -560,7 +560,7 @@ namespace XsltService
 
         private static bool CanParseUsingDefault(string value)
         {
-            return DateTime.TryParse(value, CultureInfo.InvariantCulture, 
+            return DateTime.TryParse(value, CultureInfo.InvariantCulture,
                                      DateTimeStyles.AssumeLocal, out var notUsed);
         }
 
@@ -578,7 +578,7 @@ namespace XsltService
             }
 
             var xpathExpressions = XPathToStrings(iterator);
-            
+
             return xpathExpressions.FirstOrDefault()?.Trim() ?? string.Empty;
         }
 
@@ -586,7 +586,7 @@ namespace XsltService
         {
             return double.TryParse(val, NumberStyles.Any, CultureInfo.InvariantCulture, out var result)
                        ? result
-                       : (double?) null;
+                       : (double?)null;
         }
 
         private static string DoubleToString(double v, string format)
@@ -663,7 +663,7 @@ namespace XsltService
             var texts = XPathToStrings(nodes);
 
             Console.WriteLine("Responses are: \n");
-            foreach(var entry in texts)
+            foreach (var entry in texts)
             {
                 DebugMessage.AppendLine(entry);
                 Console.WriteLine(entry);

@@ -19,15 +19,20 @@ namespace XsltService
         /// </summary>
         private const string XsltNamespace = "http://www.w3.org/1999/XSL/Transform";
 
-        private static Dictionary<string, Value> cache = new Dictionary<string, Value>();
-
-        private static XsltFunctions ExtensionFunctions = new XsltFunctions();
+        public static XDocument Transform(XNode document, string xsltFile)
+        {
+            Console.WriteLine(xsltFile);
+            return Transform(document, XElement.Load(xsltFile));
+        }
 
         public static XDocument Transform(XNode document, XElement xsltDocument)
         {
             var args = new XsltArgumentList();
-            args.AddExtensionObject("ext:xslt", ExtensionFunctions);
-            return Transform(document, args, xsltDocument);
+            var extensionFunctions = new XsltFunctions();
+            args.AddExtensionObject("xalan://diadem.dirigent.plugin.helpers.XsltFunctions", extensionFunctions);
+            var transformedDocument = Transform(document, args, xsltDocument);
+            var debugMessage = new XElement("DebugMessage", extensionFunctions.DebugMessage.ToString());
+            return transformedDocument;
         }
 
         /// <summary>
@@ -72,9 +77,7 @@ namespace XsltService
             }
 
             var xsltTransformation = new XslCompiledTransform(false); // <- Will cause memory leak if debug = true, or at least it will create tons of .dlls
-            xsltTransformation.Load(
-                xsltDocument.CreateReader(), new XsltSettings(false, true), new XmlUrlResolver()
-                );
+            xsltTransformation.Load(xsltDocument.CreateReader(), new XsltSettings(false, true), new XmlUrlResolver());
                 
             var reader = document.CreateReader();
             var transformedDocument = new XDocument();
@@ -112,13 +115,6 @@ namespace XsltService
                 requestNamespaceManager.AddNamespace("xslt", XsltNamespace);
                 return requestNamespaceManager;
             }
-        }
-
-        internal class Value
-        {
-            public DateTime LastWriteTime { get; set; }
-
-            public XslCompiledTransform TransFormation { get; set; }
         }
     }
 }
